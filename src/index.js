@@ -1,3 +1,4 @@
+let origin = null;
 const allowedOrigins = ['https://mc-inspect.pages.dev', 'http://localhost:3000'];
 
 function corsHeaders(origin) {
@@ -10,7 +11,7 @@ function corsHeaders(origin) {
 
 export default {
   async fetch(request) {
-    const origin = request.headers.get('Origin');
+    origin = request.headers.get('Origin');
     const isAllowedOrigin = allowedOrigins.includes(origin);
 
     // Handle forbidden request
