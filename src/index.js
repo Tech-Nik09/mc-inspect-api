@@ -103,7 +103,7 @@ function handleServer(server) {
     headers: {
       ...corsHeaders(origin),
       'Content-Type': 'text/plain',
-      'Cache-Control': 'public, max-age=3600',
+      'Cache-Control': 'public, max-age=300',
     },
   });
 }
