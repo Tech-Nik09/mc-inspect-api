@@ -44,14 +44,61 @@ export default {
       });
     }
 
-    // Handle GET request
-    return new Response('Hello from the api. :)', {
-      status: 200,
-      headers: {
-        ...corsHeaders(origin),
-        'Content-Type': 'text/plain',
-        'Cache-Control': 'public, max-age=3600',
-      },
-    });
+    // Router
+    const url = new URL(request.url);
+    const path = url.pathname;
+    const segments = path.split('/').filter((element) => element !== '');
+    let route = segments[0];
+    const param = segments[1];
+
+    if (segments.length !== 2) {
+      route = null;
+    }
+
+    switch (route) {
+      case 'players':
+        // Handle player request
+        return handlePlayer(param);
+
+      case 'servers':
+        // Handle server request
+        return handleServer(param);
+
+      default:
+        // Handle invalid request
+        return handleNotFound();
+    }
   },
 };
+
+function handleNotFound() {
+  return new Response('Not Found', {
+    status: 404,
+    headers: {
+      ...corsHeaders(origin),
+      'Content-Type': 'text/plain',
+    },
+  });
+}
+
+function handlePlayer(player) {
+  return new Response(`Player: ${player}`, {
+    status: 200,
+    headers: {
+      ...corsHeaders(origin),
+      'Content-Type': 'text/plain',
+      'Cache-Control': 'public, max-age=3600',
+    },
+  });
+}
+
+function handleServer(server) {
+  return new Response(`Server: ${server}`, {
+    status: 200,
+    headers: {
+      ...corsHeaders(origin),
+      'Content-Type': 'text/plain',
+      'Cache-Control': 'public, max-age=3600',
+    },
+  });
+}
