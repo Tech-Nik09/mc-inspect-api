@@ -1,5 +1,9 @@
 let origin = null;
-const allowedOrigins = ['https://mc-inspect.pages.dev', 'http://localhost:3000'];
+const allowedOrigins = [
+  'https://mc-inspect.pages.dev',
+  'http://localhost:3000',
+  'http://localhost:5500',
+];
 
 function corsHeaders(origin) {
   return {
