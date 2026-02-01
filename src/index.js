@@ -90,9 +90,7 @@ async function handlePlayer(player) {
   let data;
 
   try {
-    const response = await fetch(
-      `https://api.minecraftservices.com/minecraft/profile/lookup/name/${player}`,
-    );
+    const response = await fetch(`https://api.minetools.eu/uuid/${player}`);
     if (!response.ok) {
       throw new Error();
     }
@@ -105,9 +103,7 @@ async function handlePlayer(player) {
   const uuid = data.id;
 
   try {
-    const response = await fetch(
-      `https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`,
-    );
+    const response = await fetch(`https://api.minetools.eu/profile/${uuid}`);
     if (!response.ok) {
       throw new Error();
     }
@@ -116,7 +112,7 @@ async function handlePlayer(player) {
     return handleNotFound();
   }
 
-  const textureDataEncoded = data.properties[0].value;
+  const textureDataEncoded = data.raw.properties[0].value;
   const textureDataDecoded = JSON.parse(atob(textureDataEncoded));
 
   const playerModel = textureDataDecoded.textures.SKIN.metadata?.model === 'slim' ? 'slim' : 'wide';
