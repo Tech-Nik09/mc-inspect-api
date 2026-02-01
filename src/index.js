@@ -1,9 +1,5 @@
 let origin = null;
-const allowedOrigins = [
-  'https://mc-inspect.pages.dev',
-  'http://localhost:3000',
-  'http://localhost:5500',
-];
+const allowedOrigins = ['https://mc-inspect.pages.dev', 'http://localhost:3000', 'http://localhost:5500'];
 
 function corsHeaders(origin) {
   return {
@@ -87,57 +83,53 @@ function handleNotFound() {
 }
 
 async function handlePlayer(player) {
-  let data;
-
   try {
-    const response = await fetch(`https://api.minetools.eu/uuid/${player}`);
-    if (!response.ok) {
-      throw new Error();
+    const uuidResponse = await fetch(`https://api.minetools.eu/uuid/${player}`);
+    if (!uuidResponse.ok) {
+      throw new Error(`[handlePlayer|${uuidResponse.status}] Error while fetching uuid`);
     }
-    data = await response.json();
+    const uuidData = await uuidResponse.json();
+
+    if (!uuidData.id) {
+      throw new Error(`[handlePlayer|404] Player not found`);
+    }
+    const uuid = uuidData.id;
+
+    const profileResponse = await fetch(`https://api.minetools.eu/profile/${uuid}`);
+    if (!profileResponse.ok) {
+      throw new Error(`[handlePlayer|${profileResponse.status}] Error while fetching profile`);
+    }
+    const profileData = await profileResponse.json();
+
+    const textureDataEncoded = profileData.raw.properties[0].value;
+    const textureDataDecoded = JSON.parse(atob(textureDataEncoded));
+    const playerModel = textureDataDecoded.textures.SKIN.metadata?.model === 'slim' ? 'slim' : 'wide';
+    const capeUrl = textureDataDecoded.textures.CAPE?.url;
+    const skinUrl = textureDataDecoded.textures.SKIN.url;
+    const skinId = skinUrl.split('/').at(-1);
+    const name = textureDataDecoded.profileName;
+
+    const responseData = {
+      name,
+      uuid,
+      skinId,
+      playerModel,
+      skinUrl,
+      capeUrl,
+    };
+
+    return new Response(JSON.stringify(responseData), {
+      status: 200,
+      headers: {
+        ...corsHeaders(origin),
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=3600',
+      },
+    });
   } catch (error) {
+    console.error(error);
     return handleNotFound();
   }
-
-  const name = data.name;
-  const uuid = data.id;
-
-  try {
-    const response = await fetch(`https://api.minetools.eu/profile/${uuid}`);
-    if (!response.ok) {
-      throw new Error();
-    }
-    data = await response.json();
-  } catch (error) {
-    return handleNotFound();
-  }
-
-  const textureDataEncoded = data.raw.properties[0].value;
-  const textureDataDecoded = JSON.parse(atob(textureDataEncoded));
-
-  const playerModel = textureDataDecoded.textures.SKIN.metadata?.model === 'slim' ? 'slim' : 'wide';
-  const skinUrl = textureDataDecoded.textures.SKIN.url;
-  const skinId = skinUrl.split('/').at(-1);
-
-  const capeUrl = textureDataDecoded.textures.CAPE?.url;
-
-  const responseData = {
-    name,
-    uuid,
-    skinId,
-    playerModel,
-    skinUrl,
-    capeUrl,
-  };
-
-  return new Response(JSON.stringify(responseData), {
-    status: 200,
-    headers: {
-      ...corsHeaders(origin),
-      'Content-Type': 'application/json',
-      'Cache-Control': 'public, max-age=3600',
-    },
-  });
 }
 
 function handleServer(server) {
