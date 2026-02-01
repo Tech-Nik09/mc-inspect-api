@@ -1,5 +1,9 @@
 let origin = null;
-const allowedOrigins = ['https://mc-inspect.pages.dev', 'http://localhost:3000'];
+const allowedOrigins = [
+  'https://mc-inspect.pages.dev',
+  'http://localhost:3000',
+  'http://localhost:5500',
+];
 
 function corsHeaders(origin) {
   return {
@@ -82,12 +86,59 @@ function handleNotFound() {
   });
 }
 
-function handlePlayer(player) {
-  return new Response(`Player: ${player}`, {
+async function handlePlayer(player) {
+  let data;
+
+  try {
+    const response = await fetch(
+      `https://api.minecraftservices.com/minecraft/profile/lookup/name/${player}`,
+    );
+    if (!response.ok) {
+      throw new Error();
+    }
+    data = await response.json();
+  } catch (error) {
+    return handleNotFound();
+  }
+
+  const name = data.name;
+  const uuid = data.id;
+
+  try {
+    const response = await fetch(
+      `https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`,
+    );
+    if (!response.ok) {
+      throw new Error();
+    }
+    data = await response.json();
+  } catch (error) {
+    return handleNotFound();
+  }
+
+  const textureDataEncoded = data.properties[0].value;
+  const textureDataDecoded = JSON.parse(atob(textureDataEncoded));
+
+  const playerModel = textureDataDecoded.textures.SKIN.metadata?.model === 'slim' ? 'slim' : 'wide';
+  const skinUrl = textureDataDecoded.textures.SKIN.url;
+  const skinId = skinUrl.split('/').at(-1);
+
+  const capeUrl = textureDataDecoded.textures.CAPE?.url;
+
+  const responseData = {
+    name,
+    uuid,
+    skinId,
+    playerModel,
+    skinUrl,
+    capeUrl,
+  };
+
+  return new Response(JSON.stringify(responseData), {
     status: 200,
     headers: {
       ...corsHeaders(origin),
-      'Content-Type': 'text/plain',
+      'Content-Type': 'application/json',
       'Cache-Control': 'public, max-age=3600',
     },
   });
@@ -99,7 +150,7 @@ function handleServer(server) {
     headers: {
       ...corsHeaders(origin),
       'Content-Type': 'text/plain',
-      'Cache-Control': 'public, max-age=3600',
+      'Cache-Control': 'public, max-age=300',
     },
   });
 }
