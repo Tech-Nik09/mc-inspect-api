@@ -123,7 +123,7 @@ async function handlePlayer(player) {
       headers: {
         ...corsHeaders(origin),
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=3600',
+        'Cache-Control': 'public, max-age=86400',
       },
     });
   } catch (error) {
@@ -138,7 +138,7 @@ function handleServer(server) {
     headers: {
       ...corsHeaders(origin),
       'Content-Type': 'text/plain',
-      'Cache-Control': 'public, max-age=300',
+      'Cache-Control': 'public, max-age=600',
     },
   });
 }
