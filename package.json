@@ -7,10 +7,12 @@
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
     "start": "wrangler dev",
-    "test": "vitest"
+    "test": "vitest",
+    "format": "prettier --write --experimental-cli src/"
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.12.4",
+    "prettier": "^3.8.1",
     "vitest": "~3.2.0",
     "wrangler": "^4.61.1"
   }
