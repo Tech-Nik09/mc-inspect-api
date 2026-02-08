@@ -1,6 +1,7 @@
 let origin = null;
 const allowedOrigins = ['https://mc-inspect.pages.dev', 'http://localhost:3000', 'http://localhost:5500'];
 
+// Set CORS headers
 function corsHeaders(origin) {
   return {
     'Access-Control-Allow-Origin': origin,
@@ -45,7 +46,7 @@ export default {
       });
     }
 
-    // Router
+    // Api endpoint-url router
     const url = new URL(request.url);
     const path = url.pathname;
     const segments = path.split('/').filter((element) => element !== '');
@@ -72,6 +73,7 @@ export default {
   },
 };
 
+// Send 404 response
 function handleNotFound() {
   return new Response('Not Found', {
     status: 404,
@@ -82,25 +84,28 @@ function handleNotFound() {
   });
 }
 
+// Players api endpoint
 async function handlePlayer(player) {
   try {
+    // Fetch player uuid
     const uuidResponse = await fetch(`https://api.minetools.eu/uuid/${player}`);
     if (!uuidResponse.ok) {
       throw new Error(`[handlePlayer|${uuidResponse.status}] Error while fetching uuid`);
     }
     const uuidData = await uuidResponse.json();
-
     if (!uuidData.id) {
       throw new Error(`[handlePlayer|404] Player not found`);
     }
-    const uuid = uuidData.id;
+    const uuid = uuidData.id.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, '$1-$2-$3-$4-$5');
 
+    // Fetch player profile
     const profileResponse = await fetch(`https://api.minetools.eu/profile/${uuid}`);
     if (!profileResponse.ok) {
       throw new Error(`[handlePlayer|${profileResponse.status}] Error while fetching profile`);
     }
     const profileData = await profileResponse.json();
 
+    // Parse profile data
     const textureDataEncoded = profileData.raw.properties[0].value;
     const textureDataDecoded = JSON.parse(atob(textureDataEncoded));
     const playerModel = textureDataDecoded.textures.SKIN.metadata?.model === 'slim' ? 'slim' : 'wide';
@@ -109,6 +114,7 @@ async function handlePlayer(player) {
     const skinId = skinUrl.split('/').at(-1);
     const name = textureDataDecoded.profileName;
 
+    // Create response object
     const responseData = {
       name,
       uuid,
@@ -118,27 +124,30 @@ async function handlePlayer(player) {
       capeUrl,
     };
 
+    // Send response
     return new Response(JSON.stringify(responseData), {
       status: 200,
       headers: {
         ...corsHeaders(origin),
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=3600',
+        'Cache-Control': 'public, max-age=86400',
       },
     });
   } catch (error) {
+    // Log error and send 404 response
     console.error(error);
     return handleNotFound();
   }
 }
 
+// Servers api endpoint
 function handleServer(server) {
   return new Response(`Server: ${server}`, {
     status: 200,
     headers: {
       ...corsHeaders(origin),
       'Content-Type': 'text/plain',
-      'Cache-Control': 'public, max-age=300',
+      'Cache-Control': 'public, max-age=600',
     },
   });
 }
