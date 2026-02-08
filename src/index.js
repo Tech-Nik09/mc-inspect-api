@@ -96,7 +96,7 @@ async function handlePlayer(player) {
     if (!uuidData.id) {
       throw new Error(`[handlePlayer|404] Player not found`);
     }
-    const uuid = uuidData.id;
+    const uuid = uuidData.id.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, '$1-$2-$3-$4-$5');
 
     // Fetch player profile
     const profileResponse = await fetch(`https://api.minetools.eu/profile/${uuid}`);
