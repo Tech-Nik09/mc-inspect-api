@@ -1,29 +1,22 @@
-let origin = null;
-const allowedOrigins = ['https://mc-inspect.pages.dev', 'http://localhost:3000', 'http://localhost:5500'];
+// Allowed origin whitelist
+const allowedOrigins = ['https://mc-inspect.pages.dev'];
 
 // Set CORS headers
 function corsHeaders(origin) {
   return {
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, X-API-Key',
   };
 }
 
 export default {
-  async fetch(request) {
-    origin = request.headers.get('Origin');
-    const isAllowedOrigin = allowedOrigins.includes(origin);
+  async fetch(request, env) {
+    const origin = request.headers.get('Origin') || '';
+    const apiKey = request.headers.get('X-API-Key');
 
-    // Handle forbidden request
-    if (!isAllowedOrigin) {
-      return new Response('Forbidden', {
-        status: 403,
-        headers: {
-          'Content-Type': 'text/plain',
-        },
-      });
-    }
+    const isProductionOrigin = allowedOrigins.includes(origin);
+    const isLocalOrigin = origin.includes('localhost') || origin.includes('127.0.0.1');
 
     // Handle preflight request
     if (request.method === 'OPTIONS') {
@@ -31,6 +24,17 @@ export default {
         headers: {
           ...corsHeaders(origin),
           'Access-Control-Max-Age': '86400',
+        },
+      });
+    }
+
+    // Handle forbidden request (not production origin and not local origin with correct key)
+    if (!isProductionOrigin && !(isLocalOrigin && apiKey === env.API_KEY)) {
+      return new Response('Forbidden', {
+        status: 403,
+        headers: {
+          ...corsHeaders(origin),
+          'Content-Type': 'text/plain',
         },
       });
     }
