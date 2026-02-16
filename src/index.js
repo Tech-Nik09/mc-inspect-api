@@ -64,21 +64,21 @@ export default {
     switch (route) {
       case 'players':
         // Handle player request
-        return handlePlayer(param);
+        return handlePlayer(param, origin);
 
       case 'servers':
         // Handle server request
-        return handleServer(param);
+        return handleServer(param, origin);
 
       default:
         // Handle invalid request
-        return handleNotFound();
+        return handleNotFound(origin);
     }
   },
 };
 
 // Send 404 response
-function handleNotFound() {
+function handleNotFound(origin) {
   return new Response('Not Found', {
     status: 404,
     headers: {
@@ -89,7 +89,7 @@ function handleNotFound() {
 }
 
 // Players api endpoint
-async function handlePlayer(player) {
+async function handlePlayer(player, origin) {
   try {
     // Fetch player uuid
     const uuidResponse = await fetch(`https://api.minetools.eu/uuid/${player}`);
@@ -140,12 +140,12 @@ async function handlePlayer(player) {
   } catch (error) {
     // Log error and send 404 response
     console.error(error);
-    return handleNotFound();
+    return handleNotFound(origin);
   }
 }
 
 // Servers api endpoint
-function handleServer(server) {
+function handleServer(server, origin) {
   return new Response(`Server: ${server}`, {
     status: 200,
     headers: {
