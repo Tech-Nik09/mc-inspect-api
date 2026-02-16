@@ -1,5 +1,6 @@
-// Allowed origin whitelist
-const allowedOrigins = ['https://mc-inspect.pages.dev'];
+// Allowed origins whitelist
+const allowedProductionOrigins = ['https://mc-inspect.pages.dev'];
+const allowedLocalOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
 
 // Set CORS headers
 function corsHeaders(origin) {
@@ -15,8 +16,8 @@ export default {
     const origin = request.headers.get('Origin') || '';
     const apiKey = request.headers.get('X-API-Key');
 
-    const isProductionOrigin = allowedOrigins.includes(origin);
-    const isLocalOrigin = origin.includes('localhost') || origin.includes('127.0.0.1');
+    const isProductionOrigin = allowedProductionOrigins.includes(origin);
+    const isLocalOrigin = allowedLocalOrigins.includes(origin);
 
     // Handle preflight request
     if (request.method === 'OPTIONS') {
