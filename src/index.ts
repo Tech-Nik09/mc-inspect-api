@@ -3,15 +3,15 @@ const allowedProductionOrigins: string[] = ['https://mc-inspect.pages.dev'];
 const allowedLocalOrigins: string[] = ['http://localhost:3000', 'http://127.0.0.1:3000'];
 
 // Create response
-function createResponse(body: object, origin: string, status: number, headers: string[] = []) {
+function createResponse(body: object, origin: string, status: number, headers: { [key: string]: string } = {}) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
+      ...headers,
       'Access-Control-Allow-Origin': origin,
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, X-API-Key',
       'Content-Type': 'application/json',
-      ...headers,
     },
   });
 }
@@ -25,7 +25,7 @@ export default {
     const isLocalOrigin = allowedLocalOrigins.includes(origin);
 
     // Handle preflight request
-    if (request.method === 'OPTIONS') return createResponse({}, origin, 200, ['"Access-Control-Max-Age": "86400"']);
+    if (request.method === 'OPTIONS') return createResponse({}, origin, 200, { 'Access-Control-Max-Age': '86400' });
 
     // Handle forbidden request (not production origin and not local origin with correct key)
     if (!isProductionOrigin && !(isLocalOrigin && apiKey === env.API_KEY)) return createResponse({ error: 'Forbidden' }, origin, 403);
@@ -97,7 +97,7 @@ async function handlePlayer(player: string, origin: string) {
       capeUrl,
     };
 
-    return createResponse(responseData, origin, 200, ["'Cache-Control': 'public, max-age=86400'"]);
+    return createResponse(responseData, origin, 200, { 'Cache-Control': 'public, max-age=86400' });
   } catch (error) {
     // Log error and send 404 response
     console.error(error);
@@ -107,5 +107,5 @@ async function handlePlayer(player: string, origin: string) {
 
 // Servers api endpoint
 function handleServer(server: string, origin: string) {
-  return createResponse({ server }, origin, 200, ["'Cache-Control': 'public, max-age=600'"]);
+  return createResponse({ server }, origin, 200, { 'Cache-Control': 'public, max-age=600' });
 }
