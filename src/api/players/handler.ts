@@ -1,4 +1,4 @@
-import { UuidData, ProfileData, TextureDataDecoded } from './types.js';
+import type { UuidData, ProfileData, TextureDataDecoded } from './types.js';
 import { createResponse } from '../../shared/response.js';
 
 // Players api endpoint
