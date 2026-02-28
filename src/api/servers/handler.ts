@@ -1,4 +1,4 @@
-import { createResponse } from '../../shared/response.js';
+import { createResponse } from '../../shared/response';
 
 // Servers api endpoint
 export function handleServer(server: string, origin: string) {

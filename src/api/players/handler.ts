@@ -1,5 +1,5 @@
-import type { UuidData, ProfileData, TextureDataDecoded } from './types.js';
-import { createResponse } from '../../shared/response.js';
+import type { UuidData, ProfileData, TextureDataDecoded } from './types';
+import { createResponse } from '../../shared/response';
 
 // Players api endpoint
 export async function handlePlayer(player: string, origin: string) {

@@ -1,6 +1,6 @@
-import { createResponse } from './shared/response.js';
-import { handlePlayer } from './api/players/handler.js';
-import { handleServer } from './api/servers/handler.js';
+import { createResponse } from './shared/response';
+import { handlePlayer } from './api/players/handler';
+import { handleServer } from './api/servers/handler';
 
 // Allowed origins whitelist
 const allowedProductionOrigins: string[] = ['https://mc-inspect.pages.dev'];
