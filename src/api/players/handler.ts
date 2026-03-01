@@ -9,7 +9,7 @@ export async function handlePlayer(player: string, origin: string): Promise<Resp
     if (!uuidResponse.ok) throw new Error(`[handlePlayer|${uuidResponse.status}] Error while fetching uuid`);
 
     const uuidData: UuidData = await uuidResponse.json();
-    if (!uuidData.id) throw new Error(`[handlePlayer|404] Player not found`);
+    if (!uuidData.id) return createResponse({ error: 'Player Not Found' }, origin, 404);
 
     const uuid = uuidData.id.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, '$1-$2-$3-$4-$5');
 
@@ -40,8 +40,8 @@ export async function handlePlayer(player: string, origin: string): Promise<Resp
 
     return createResponse(responseData, origin, 200, { 'Cache-Control': 'public, max-age=86400' });
   } catch (err) {
-    // Log error and send 404 response
+    // Handle error
     console.error(err);
-    return createResponse({ error: 'Player Not Found' }, origin, 404);
+    return createResponse({ error: 'Internal Server Error' }, origin, 500);
   }
 }
