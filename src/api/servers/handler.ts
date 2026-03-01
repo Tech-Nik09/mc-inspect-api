@@ -5,8 +5,8 @@ export async function handleServer(server: string, origin: string): Promise<Resp
   try {
     return createResponse({ server }, origin, 200, { 'Cache-Control': 'public, max-age=600' });
   } catch (err) {
-    // Log error and send 404 response
+    // Handle error
     console.error(err);
-    return createResponse({ error: 'Server Not Found' }, origin, 404);
+    return createResponse({ error: 'Internal Server Error' }, origin, 500);
   }
 }
