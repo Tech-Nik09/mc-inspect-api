@@ -4,7 +4,7 @@ import { handleServer } from './api/servers/handler';
 
 // Allowed origins whitelist
 const allowedProductionOrigins: string[] = ['https://mc-inspect.pages.dev'];
-const allowedLocalOrigins: string[] = ['http://localhost:3000', 'http://127.0.0.1:3000'];
+const allowedLocalOrigins: string[] = ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:3001', 'http://127.0.0.1:3001'];
 
 // Main handler and router
 export default {
