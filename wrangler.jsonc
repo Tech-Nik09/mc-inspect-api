@@ -12,7 +12,7 @@
   },
   "compatibility_flags": ["nodejs_compat"],
   "dev": {
-    "port": 3100,
+    "port": 3500,
   },
   /**
    * Smart Placement
