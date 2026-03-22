@@ -5,7 +5,7 @@ import { createResponse } from '../../shared/response';
 export async function handlePlayer(player: string, origin: string): Promise<Response> {
   try {
     // Fetch player uuid
-    const uuidResponse = await fetch(`https://api.minetools.eu/uuid/${player}`);
+    const uuidResponse = await fetch(`https://api.minecraftservices.com/minecraft/profile/lookup/name/${player}`);
     if (!uuidResponse.ok) throw new Error(`[handlePlayer|${uuidResponse.status}] Error while fetching uuid`);
 
     const uuidData: UuidData = await uuidResponse.json();
@@ -14,13 +14,13 @@ export async function handlePlayer(player: string, origin: string): Promise<Resp
     const uuid = uuidData.id.replace(/^(.{8})(.{4})(.{4})(.{4})(.{12})$/, '$1-$2-$3-$4-$5');
 
     // Fetch player profile
-    const profileResponse = await fetch(`https://api.minetools.eu/profile/${uuid}`);
+    const profileResponse = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${uuid}`);
     if (!profileResponse.ok) throw new Error(`[handlePlayer|${profileResponse.status}] Error while fetching profile`);
 
     const profileData: ProfileData = await profileResponse.json();
 
     // Parse profile data
-    const textureDataEncoded = profileData.raw.properties[0].value;
+    const textureDataEncoded = profileData.properties[0].value;
     const textureDataDecoded: TextureDataDecoded = JSON.parse(atob(textureDataEncoded));
     const playerModel = textureDataDecoded.textures.SKIN.metadata?.model === 'slim' ? 'slim' : 'wide';
     const capeUrl = textureDataDecoded.textures.CAPE?.url;
