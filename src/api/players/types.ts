@@ -1,5 +1,5 @@
-// Type for the player UUID data from the mojang API
-export type UuidData = {
+// Type for the player pre lookup data from the mojang API
+export type PreLookupData = {
   id: string;
   name: string;
 };
@@ -16,6 +16,7 @@ export type ProfileData = {
 // Type for the decoded base64 player profile data
 export type TextureDataDecoded = {
   profileName: string;
+  profileId: string;
   textures: {
     SKIN: {
       url: string;
