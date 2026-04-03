@@ -43,7 +43,7 @@ export async function handlePlayer(player: string, origin: string): Promise<Resp
       capeUrl,
     };
 
-    return createResponse(responseData, origin, 200, { 'Cache-Control': 'public, max-age=86400' });
+    return createResponse(responseData, origin, 200, { 'Cache-Control': 'public, max-age=3600, s-maxage=86400' });
   } catch (err) {
     // Handle error
     console.error(err);
