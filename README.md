@@ -1,6 +1,6 @@
 # mc-inspect-api
 
-A work in progress cloudflare worker for the [mc-inspect](https://github.com/Tech-Nik09/mc-inspect) project.
+A work in progress cloudflare worker for the [mc-inspect](https://github.com/nkmLABS/mc-inspect) project.
 
 ## Please notice:
 
