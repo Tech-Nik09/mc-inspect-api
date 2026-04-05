@@ -2,11 +2,15 @@ import type { PreLookupData, ProfileData, TextureDataDecoded, ResponseData } fro
 import { createResponse } from '../../shared/response';
 
 // Players api endpoint
-export async function handlePlayer(player: string, origin: string): Promise<Response> {
+export async function handlePlayer(req: Request, player: string, origin: string): Promise<Response> {
   try {
-    const uuidCriteria = /^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|[0-9a-fA-F]{32})$/;
+    // Check whether response is present in cache
+    const playersCache = await caches.open('playersCache');
+    let res = await playersCache.match(req);
+    if (res) return res;
 
     // Fetch player uuid
+    const uuidCriteria = /^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|[0-9a-fA-F]{32})$/;
     if (!uuidCriteria.test(player)) {
       const preLookupResponse = await fetch(`https://api.minecraftservices.com/minecraft/profile/lookup/name/${player}`);
       if (preLookupResponse.status === 404) return createResponse({ error: 'Player Not Found' }, origin, 404);
@@ -43,7 +47,10 @@ export async function handlePlayer(player: string, origin: string): Promise<Resp
       capeUrl,
     };
 
-    return createResponse(responseData, origin, 200, { 'Cache-Control': 'public, max-age=86400' });
+    // Cache and return response
+    res = createResponse(responseData, origin, 200, { 'Cache-Control': 'public, max-age=3600, s-maxage=86400' });
+    await playersCache.put(req, res);
+    return res;
   } catch (err) {
     // Handle error
     console.error(err);

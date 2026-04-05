@@ -38,11 +38,11 @@ export default {
     switch (route) {
       case 'players':
         // Handle player request
-        return handlePlayer(param, origin);
+        return handlePlayer(req, param, origin);
 
       case 'servers':
         // Handle server request
-        return handleServer(param, origin);
+        return handleServer(req, param, origin);
 
       default:
         // Handle invalid request
