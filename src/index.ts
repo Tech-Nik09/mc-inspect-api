@@ -8,7 +8,7 @@ const allowedLocalOrigins: string[] = ['http://localhost:3000', 'http://127.0.0.
 
 // Main handler and router
 export default {
-  async fetch(req, env): Promise<Response> {
+  async fetch(req, env, ctx): Promise<Response> {
     const origin = req.headers.get('Origin') || '';
     const apiKey = req.headers.get('X-API-Key') || '';
 
@@ -38,11 +38,11 @@ export default {
     switch (route) {
       case 'players':
         // Handle player request
-        return handlePlayer(param, origin);
+        return handlePlayer(req, ctx, param, origin);
 
       case 'servers':
         // Handle server request
-        return handleServer(param, origin);
+        return handleServer(req, ctx, param, origin);
 
       default:
         // Handle invalid request
