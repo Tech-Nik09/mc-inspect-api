@@ -5,6 +5,8 @@ import { handleServer } from './api/servers/handler';
 // Main handler and router
 export default {
   async fetch(req, env, ctx): Promise<Response> {
+    const origin = req.headers.get('Origin') || '';
+
     // Handle preflight request
     if (req.method === 'OPTIONS') return createResponse({}, origin, 200, { 'Access-Control-Max-Age': '86400' });
 
