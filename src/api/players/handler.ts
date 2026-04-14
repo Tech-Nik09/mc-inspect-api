@@ -54,6 +54,6 @@ export async function handlePlayer(req: Request, ctx: ExecutionContext, player: 
   } catch (err) {
     // Handle error
     console.error(err);
-    return createResponse({ error: 'Internal Server Error' }, origin, 500);
+    return createResponse({ error: 'Internal server error' }, origin, 500);
   }
 }

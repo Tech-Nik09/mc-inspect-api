@@ -7,6 +7,6 @@ export async function handleServer(req: Request, ctx: ExecutionContext, server: 
   } catch (err) {
     // Handle error
     console.error(err);
-    return createResponse({ error: 'Internal Server Error' }, origin, 500);
+    return createResponse({ error: 'Internal server error' }, origin, 500);
   }
 }
