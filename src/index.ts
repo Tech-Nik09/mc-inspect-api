@@ -6,6 +6,7 @@ import { handleServer } from './api/servers/handler';
 export default {
   async fetch(req, env, ctx): Promise<Response> {
     const origin = req.headers.get('Origin') || '';
+    const userAgent = env.USER_AGENT || 'mc-inspect-api/0.0.0';
 
     // Handle preflight request
     if (req.method === 'OPTIONS') return createResponse({}, origin, 200, { 'Access-Control-Max-Age': '86400' });
@@ -27,11 +28,11 @@ export default {
     switch (route) {
       case 'players':
         // Handle player request
-        return handlePlayer(req, env, ctx, param, origin);
+        return handlePlayer(req, ctx, param, origin, userAgent);
 
       case 'servers':
         // Handle server request
-        return handleServer(req, env, ctx, param, origin);
+        return handleServer(req, ctx, param, origin, userAgent);
 
       default:
         // Handle invalid request

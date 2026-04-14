@@ -2,7 +2,7 @@ import type { PreLookupData, ProfileData, TextureDataDecoded, ResponseData } fro
 import { createResponse } from '../../shared/response';
 
 // Players api endpoint
-export async function handlePlayer(req: Request, env: Env, ctx: ExecutionContext, player: string, origin: string): Promise<Response> {
+export async function handlePlayer(req: Request, ctx: ExecutionContext, player: string, origin: string, userAgent: string): Promise<Response> {
   try {
     // Check whether response is present in cache
     const playersCache = await caches.open('playersCache');
@@ -10,7 +10,6 @@ export async function handlePlayer(req: Request, env: Env, ctx: ExecutionContext
     if (res) return res;
 
     // Fetch player uuid
-    const userAgent = env.USER_AGENT || 'mc-inspect-api/0.0.0';
     const uuidCriteria = /^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}|[0-9a-fA-F]{32})$/;
     if (!uuidCriteria.test(player)) {
       const preLookupResponse = await fetch(`https://api.minecraftservices.com/minecraft/profile/lookup/name/${player}`, {
