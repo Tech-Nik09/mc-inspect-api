@@ -29,6 +29,15 @@ export type UpstreamPlayerdbProfileData = {
   };
 };
 
+// Upstream data from Ashcon API profile lookup
+export type UpstreamAshconProfileData = {
+  textures: {
+    raw: {
+      value: string;
+    };
+  };
+};
+
 // Decoded base64 player profile data
 export type TextureDataDecoded = {
   profileName: string;

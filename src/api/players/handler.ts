@@ -5,6 +5,7 @@ import type {
   DownstreamData,
   UpstreamPlayerData,
   UpstreamMojangProfileData,
+  UpstreamAshconProfileData,
 } from './types';
 import { createResponse } from '../../shared/response';
 
@@ -20,7 +21,7 @@ export async function handlePlayer(req: Request, ctx: ExecutionContext, player: 
     if (!isValidName(player) && !isValidUuid(player)) return createResponse({ error: 'Player Not Found' }, origin, 404);
 
     // Try upstream APIs
-    const upstreamAPIs = [fetchMojang, fetchPlayerdb] as const;
+    const upstreamAPIs = [fetchMojang, fetchPlayerdb, fetchAshcon] as const;
     let upstreamData: UpstreamPlayerData = null;
 
     for (const upstreamAPI of upstreamAPIs) {
@@ -83,7 +84,7 @@ async function fetchMojang(player: string, userAgent: string): Promise<UpstreamP
       headers: { 'User-Agent': userAgent },
     });
     if (preRes.status === 404 || preRes.status === 400) return null;
-    if (!preRes.ok) throw new Error(`[fetchMojang|${preRes.status}] Error while fetching mojang api`);
+    if (!preRes.ok) throw new Error(`[fetchMojang|${preRes.status}] Error while fetching Mojang API`);
 
     const preDat: UpstreamMojangPreData = await preRes.json();
     player = preDat.id;
@@ -94,7 +95,7 @@ async function fetchMojang(player: string, userAgent: string): Promise<UpstreamP
     headers: { 'User-Agent': userAgent },
   });
   if (profileRes.status === 204 || profileRes.status === 400) return null;
-  if (!profileRes.ok) throw new Error(`[fetchMojang|${profileRes.status}] Error while fetching mojang api`);
+  if (!profileRes.ok) throw new Error(`[fetchMojang|${profileRes.status}] Error while fetching Mojang API`);
 
   const profileDat: UpstreamMojangProfileData = await profileRes.json();
 
@@ -108,10 +109,24 @@ async function fetchPlayerdb(player: string, userAgent: string): Promise<Upstrea
     headers: { 'User-Agent': userAgent },
   });
   if (res.status === 404 || res.status === 400) return null;
-  if (!res.ok) throw new Error(`[fetchPlayerdb|${res.status}] Error while fetching PlayerDB api`);
+  if (!res.ok) throw new Error(`[fetchPlayerdb|${res.status}] Error while fetching PlayerDB API`);
 
   const dat: UpstreamPlayerdbProfileData = await res.json();
 
   // Map and return textureDataEncoded
   return dat.data.player.properties[0].value;
+}
+
+async function fetchAshcon(player: string, userAgent: string): Promise<UpstreamPlayerData> {
+  // Fetch player profile
+  const res = await fetch(`https://api.ashcon.app/mojang/v2/user/${player}`, {
+    headers: { 'User-Agent': userAgent },
+  });
+  if (res.status === 404 || res.status === 400) return null;
+  if (!res.ok) throw new Error(`[fetchAshcon|${res.status}] Error while fetching Ashcon API`);
+
+  const dat: UpstreamAshconProfileData = await res.json();
+
+  // Map and return textureDataEncoded
+  return dat.textures.raw.value;
 }
