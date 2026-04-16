@@ -1,11 +1,14 @@
-// Type for the player pre lookup data from the mojang API
-export type PreLookupData = {
+// Upstream data from player APIs
+export type UpstreamPlayerData = string | null;
+
+// Upstream data from mojang API pre lookup
+export type UpstreamMojangPreData = {
   id: string;
   name: string;
 };
 
-// Type for the player profile data from the mojang API
-export type ProfileData = {
+// Upstream data from mojang API profile lookup
+export type UpstreamMojangProfileData = {
   properties: [
     {
       value: string;
@@ -13,7 +16,7 @@ export type ProfileData = {
   ];
 };
 
-// Type for the decoded base64 player profile data
+// Decoded base64 player profile data
 export type TextureDataDecoded = {
   profileName: string;
   profileId: string;
@@ -30,8 +33,8 @@ export type TextureDataDecoded = {
   };
 };
 
-// Type for returned data
-export type ResponseData = {
+// Returned data
+export type DownstreamData = {
   name: string;
   uuid: string;
   skinId: string;
