@@ -16,6 +16,19 @@ export type UpstreamMojangProfileData = {
   ];
 };
 
+// Upstream data from PlayerDB API profile lookup
+export type UpstreamPlayerdbProfileData = {
+  data: {
+    player: {
+      properties: [
+        {
+          value: string;
+        },
+      ];
+    };
+  };
+};
+
 // Decoded base64 player profile data
 export type TextureDataDecoded = {
   profileName: string;

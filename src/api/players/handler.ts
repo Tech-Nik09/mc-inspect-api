@@ -1,4 +1,11 @@
-import type { UpstreamMojangPreData, UpstreamMojangProfileData, TextureDataDecoded, DownstreamData, UpstreamPlayerData } from './types';
+import type {
+  UpstreamMojangPreData,
+  UpstreamPlayerdbProfileData,
+  TextureDataDecoded,
+  DownstreamData,
+  UpstreamPlayerData,
+  UpstreamMojangProfileData,
+} from './types';
 import { createResponse } from '../../shared/response';
 
 // Players api endpoint
@@ -13,7 +20,7 @@ export async function handlePlayer(req: Request, ctx: ExecutionContext, player: 
     if (!isValidName(player) && !isValidUuid(player)) return createResponse({ error: 'Player Not Found' }, origin, 404);
 
     // Try upstream APIs
-    const upstreamAPIs = [fetchMojang] as const;
+    const upstreamAPIs = [fetchMojang, fetchPlayerdb] as const;
     let upstreamData: UpstreamPlayerData = null;
 
     for (const upstreamAPI of upstreamAPIs) {
@@ -75,7 +82,7 @@ async function fetchMojang(player: string, userAgent: string): Promise<UpstreamP
     const preRes = await fetch(`https://api.minecraftservices.com/minecraft/profile/lookup/name/${player}`, {
       headers: { 'User-Agent': userAgent },
     });
-    if (preRes.status === 404) return null;
+    if (preRes.status === 404 || preRes.status === 400) return null;
     if (!preRes.ok) throw new Error(`[fetchMojang|${preRes.status}] Error while fetching mojang api`);
 
     const preDat: UpstreamMojangPreData = await preRes.json();
@@ -93,4 +100,18 @@ async function fetchMojang(player: string, userAgent: string): Promise<UpstreamP
 
   // Map and return textureDataEncoded
   return profileDat.properties[0].value;
+}
+
+async function fetchPlayerdb(player: string, userAgent: string): Promise<UpstreamPlayerData> {
+  // Fetch player profile
+  const res = await fetch(`https://playerdb.co/api/player/minecraft/${player}`, {
+    headers: { 'User-Agent': userAgent },
+  });
+  if (res.status === 404 || res.status === 400) return null;
+  if (!res.ok) throw new Error(`[fetchPlayerdb|${res.status}] Error while fetching PlayerDB api`);
+
+  const dat: UpstreamPlayerdbProfileData = await res.json();
+
+  // Map and return textureDataEncoded
+  return dat.data.player.properties[0].value;
 }
