@@ -1,6 +1,6 @@
-import { createResponse } from './shared/response';
-import { handlePlayer } from './api/players/handler';
-import { handleServer } from './api/servers/handler';
+import { createResponse } from './utils/response';
+import { handlePlayer } from './api/players';
+import { handleServer } from './api/servers';
 
 // Main handler and router
 export default {

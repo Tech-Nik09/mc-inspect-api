@@ -6,8 +6,8 @@ import type {
   UpstreamAshconData,
   TextureDataDecoded,
   DownstreamData,
-} from './types';
-import { createResponse } from '../../shared/response';
+} from '../types';
+import { createResponse } from '../utils/response';
 
 // Players api endpoint
 export async function handlePlayer(req: Request, ctx: ExecutionContext, player: string, origin: string, userAgent: string): Promise<Response> {

@@ -1,4 +1,4 @@
-import { createResponse } from '../../shared/response';
+import { createResponse } from '../utils/response';
 
 // Servers api endpoint
 export async function handleServer(req: Request, ctx: ExecutionContext, server: string, origin: string, userAgent: string): Promise<Response> {
